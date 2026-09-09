@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silsilah Kita — Genealogy Publik</title>
+  <meta name="description" content="Database silsilah keluarga publik dan kolaboratif.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { forest: { 50:'#f0fdf4',100:'#dcfce7',500:'#22c55e',600:'#16a34a',700:'#15803d',900:'#14532d' } }
+        }
+      }
+    }
+  </script>
+  <style>
+    html{scroll-behavior:smooth} body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .glass{background:rgba(255,255,255,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+    .tree-line{position:absolute;background:#bbf7d0}
+    .node{transition:transform .2s,box-shadow .2s}.node:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(20,83,45,.13)}
+    .scrollbar::-webkit-scrollbar{width:6px;height:6px}.scrollbar::-webkit-scrollbar-thumb{background:#bbf7d0;border-radius:99px}
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 text-slate-800">
+<header class="sticky top-0 z-40 border-b border-green-100 glass">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+    <a href="#" class="flex items-center gap-3 font-bold text-green-900">
+      <span class="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-700 text-white shadow-lg"><i data-lucide="git-branch"></i></span>
+      <span>Silsilah Kita</span>
+    </a>
+    <div class="flex items-center gap-2">
+      <button id="addBtn" class="rounded-xl bg-green-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-green-600/20 hover:bg-green-700">+ Tambah Data</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="relative overflow-hidden">
+  <div class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:items-center lg:py-24">
+    <div data-aos="fade-right">
+      <span class="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-800"><span class="h-2 w-2 rounded-full bg-green-500"></span> Database silsilah kolaboratif</span>
+      <h1 class="mt-5 text-4xl font-black tracking-tight text-green-950 sm:text-6xl">Hubungkan keluarga,<br><span class="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">jaga cerita generasi.</span></h1>
+      <p class="mt-5 max-w-xl text-lg leading-8 text-slate-600">Cari seseorang, jelajahi leluhur dan keturunan, tambahkan hubungan keluarga, lalu bantu komunitas memvalidasi kebenaran datanya.</p>
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div class="flex flex-1 items-center gap-2 rounded-2xl border border-green-100 bg-white px-4 py-3 shadow-sm">
+          <i data-lucide="search" class="h-5 w-5 text-green-600"></i>
+          <input id="searchInput" class="w-full outline-none" placeholder="Cari nama, tempat lahir...">
+        </div>
+        <button id="searchBtn" class="rounded-2xl bg-green-700 px-6 py-3 font-semibold text-white hover:bg-green-800">Cari</button>
+      </div>
+    </div>
+    <div data-aos="fade-left" class="relative">
+      <div class="absolute -inset-8 rounded-full bg-green-200/40 blur-3xl"></div>
+      <div class="relative rounded-[2rem] border border-green-100 bg-white/80 p-6 shadow-2xl shadow-green-900/10">
+        <div class="mb-5 flex items-center justify-between"><div><p class="text-xs font-bold uppercase tracking-widest text-green-600">Contoh jaringan</p><h2 class="text-2xl font-black text-green-950">Keluarga Nari</h2></div><span class="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">91% tervalidasi</span></div>
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div></div><div class="node rounded-2xl border border-green-100 bg-green-50 p-3"><b>Nari</b><small class="mt-1 block text-slate-500">1947</small></div><div></div>
+          <div class="node rounded-2xl border border-green-100 bg-white p-3"><b>Wardi</b><small class="mt-1 block text-slate-500">1977</small></div>
+          <div class="node rounded-2xl border border-green-100 bg-white p-3"><b>Budi</b><small class="mt-1 block text-slate-500">1980</small></div>
+          <div class="node rounded-2xl border border-green-100 bg-white p-3"><b>Hasan</b><small class="mt-1 block text-slate-500">1984</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-3"><div><p class="text-sm font-bold text-green-600">Eksplorasi</p><h2 class="text-3xl font-black text-green-950">Diagram silsilah</h2></div><div id="apiStatus" class="rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">Mode demo</div></div>
+  <div id="tree" class="overflow-auto rounded-3xl border border-green-100 bg-white p-6 shadow-xl shadow-green-900/5 scrollbar"></div>
+</section>
+</main>
+
+<div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/50 p-4">
+  <div class="max-h-[92vh] w-full max-w-2xl overflow-auto rounded-3xl bg-white shadow-2xl">
+    <div class="sticky top-0 flex items-center justify-between border-b border-slate-100 bg-white p-5"><div><h3 class="text-xl font-black">Tambah anggota keluarga</h3><p class="text-sm text-slate-500">Kontributor wajib teridentifikasi melalui email.</p></div><button id="closeModal" class="rounded-xl p-2 hover:bg-slate-100"><i data-lucide="x"></i></button></div>
+    <form id="personForm" class="space-y-5 p-5">
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="text-sm font-semibold">Nama lengkap<input required name="full_name" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-green-500" placeholder="Contoh: Wardi"></label>
+        <label class="text-sm font-semibold">Jenis kelamin<select name="gender" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"><option value="">Pilih</option><option value="male">Laki-laki</option><option value="female">Perempuan</option></select></label>
+        <label class="text-sm font-semibold">Tanggal lahir<input name="birth_date" type="date" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"></label>
+        <label class="text-sm font-semibold">Tempat lahir<input name="birth_place" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3" placeholder="Desa/Kecamatan/Kabupaten/Provinsi"></label>
+      </div>
+      <div class="rounded-2xl bg-green-50 p-4"><h4 class="font-bold text-green-900">Hubungan keluarga</h4><p class="mb-3 text-xs text-slate-500">Isi ID orang yang sudah ada bila Anda mengetahuinya.</p>
+        <div class="grid gap-4 sm:grid-cols-2"><input name="father_id" class="rounded-xl border border-green-100 bg-white px-4 py-3" placeholder="ID Ayah (opsional)"><input name="mother_id" class="rounded-xl border border-green-100 bg-white px-4 py-3" placeholder="ID Ibu (opsional)"></div>
+      </div>
+      <div class="rounded-2xl border border-slate-100 p-4"><h4 class="font-bold">Data kontributor</h4><div class="mt-3 grid gap-4 sm:grid-cols-2"><input required name="contributor_name" class="rounded-xl border border-slate-200 px-4 py-3" placeholder="Nama Anda"><input required name="contributor_email" type="email" class="rounded-xl border border-slate-200 px-4 py-3" placeholder="Email Anda"></div></div>
+      <button class="w-full rounded-2xl bg-green-700 px-5 py-3.5 font-bold text-white hover:bg-green-800">Kirim untuk validasi</button>
+      <p id="formMessage" class="hidden rounded-xl p-3 text-sm"></p>
+    </form>
+  </div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+AOS.init({duration:650,once:true});
+lucide.createIcons();
+
+const CONFIG = { API_URL: localStorage.getItem('GENEALOGY_API_URL') || '' };
+const demo = {
+  persons:[
+    {person_id:'P001',full_name:'Nari',gender:'male',birth_date:'1947-10-05',birth_place:'Brebes, Jawa Tengah',confidence_score:91},
+    {person_id:'P002',full_name:'Wati',gender:'female',birth_date:'1980-09-12',birth_place:'Cirebon, Jawa Barat',confidence_score:88},
+    {person_id:'P003',full_name:'Wardi',gender:'male',birth_date:'1977-09-12',birth_place:'Cirebon, Jawa Barat',confidence_score:96},
+    {person_id:'P004',full_name:'Budi',gender:'male',birth_date:'1980-03-10',birth_place:'Brebes, Jawa Tengah',confidence_score:74},
+    {person_id:'P005',full_name:'Hasan',gender:'male',birth_date:'1984-02-11',birth_place:'Brebes, Jawa Tengah',confidence_score:62}
+  ],
+  relationships:[
+    {parent_id:'P001',child_id:'P003',relationship_type:'father'},
+    {parent_id:'P001',child_id:'P004',relationship_type:'father'},
+    {parent_id:'P001',child_id:'P005',relationship_type:'father'}
+  ]
+};
+
+function person(id){return demo.persons.find(x=>x.person_id===id)}
+function renderTree(){
+  const root=person('P001');
+  const children=demo.relationships.filter(r=>r.parent_id===root.person_id).map(r=>person(r.child_id));
+  document.getElementById('tree').innerHTML=`
+    <div class="min-w-[720px]">
+      <div class="mx-auto w-fit text-center">
+        <button class="node rounded-2xl border-2 border-green-200 bg-green-50 px-8 py-4" onclick="openPerson('${root.person_id}')"><b class="text-lg text-green-950">${root.full_name}</b><span class="mt-1 block text-xs text-slate-500">${root.birth_date} · ${root.birth_place}</span><span class="mt-2 inline-block rounded-full bg-green-600 px-2 py-1 text-[10px] font-bold text-white">${root.confidence_score}% tervalidasi</span></button>
+      </div>
+      <div class="mx-auto my-4 h-8 w-px bg-green-200"></div>
+      <div class="flex justify-center gap-6">${children.map(c=>`<button class="node w-48 rounded-2xl border border-slate-100 bg-white p-4 text-center shadow-sm" onclick="openPerson('${c.person_id}')"><b>${c.full_name}</b><span class="mt-1 block text-xs text-slate-500">${c.birth_date||'Tanggal tidak tersedia'}</span><span class="mt-2 inline-block rounded-full bg-green-50 px-2 py-1 text-[10px] font-bold text-green-700">${c.confidence_score}%</span></button>`).join('')}</div>
+    </div>`;
+}
+function openPerson(id){
+  const p=person(id);
+  alert(`${p.full_name}\\nID: ${p.person_id}\\nLahir: ${p.birth_date||'-'}\\nTempat: ${p.birth_place||'-'}\\nConfidence: ${p.confidence_score}%\\n\\nDetail explorer akan tersedia pada tahap berikutnya.`);
+}
+renderTree();
+
+const modal=document.getElementById('modal');
+document.getElementById('addBtn').onclick=()=>{modal.classList.remove('hidden');modal.classList.add('flex')};
+document.getElementById('closeModal').onclick=()=>{modal.classList.add('hidden');modal.classList.remove('flex')};
+document.getElementById('personForm').onsubmit=async e=>{
+  e.preventDefault();
+  const msg=document.getElementById('formMessage');
+  const data=Object.fromEntries(new FormData(e.target).entries());
+  if(!CONFIG.API_URL){
+    msg.className='rounded-xl bg-amber-50 p-3 text-sm text-amber-800';
+    msg.textContent='Mode demo: data belum dikirim ke backend. Isi URL Apps Script pada localStorage GENEALOGY_API_URL.';
+    msg.classList.remove('hidden'); return;
+  }
+  try{
+    const res=await fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'createPerson',payload:data})});
+    const out=await res.json();
+    msg.className='rounded-xl bg-green-50 p-3 text-sm text-green-800'; msg.textContent=out.message||'Data berhasil dikirim.';
+    msg.classList.remove('hidden');
+  }catch(err){
+    msg.className='rounded-xl bg-red-50 p-3 text-sm text-red-700'; msg.textContent='Gagal menghubungi backend: '+err.message; msg.classList.remove('hidden');
+  }
+};
+document.getElementById('searchBtn').onclick=()=>alert('Pencarian API akan aktif setelah API_URL dikonfigurasi.');
+</script>
+</body>
+</html>
